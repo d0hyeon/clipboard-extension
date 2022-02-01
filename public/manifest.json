@@ -5,7 +5,8 @@
   "version": "1.0.0",
   "manifest_version": 3,
   "background": {
-    "service_worker": "static/js/background.js"
+    "service_worker": "static/js/background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -14,12 +15,8 @@
     }
   ],
   "permissions": [
-    "activeTab",
-    "storage",
-    "browsingData",
-    "clipboardRead",
-    "clipboardWrite",
-    "contextMenus"
+    "tabs",
+    "storage"
   ],
   "host_permissions": [
     "*://*/*"
