@@ -6,3 +6,9 @@ export const clipboardAtom = atom<ClipboardData[]>({
   default: [],
 });
 
+export const tabAtom = atom<TabData>({
+  key: 'tabState',
+  default: {
+    active: false
+  }
+})
