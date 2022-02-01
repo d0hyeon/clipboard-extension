@@ -2,31 +2,16 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  devServer(getConfigFunction) {
-    return ($1, $2) => {
-      const config = getConfigFunction($1, $2)
-      
-      return {
-        ...config,
-        devMiddleware: {
-          ...config.devMiddleware,
-          writeToDisk: true
-        }
-      }
-    }
-  },
   webpack (config, env) {
     let htmlPlugin = null;
 
-    const Plugins = env.mode === 'production' 
-      ? config.plugins.filter((plugin) => {
-          if(plugin instanceof HtmlWebpackPlugin) {
-            htmlPlugin = plugin;
-            return false;
-          }
-          return true;
-        }) 
-      : config.plugins
+    const Plugins = config.plugins.filter((plugin) => {
+      if(plugin instanceof HtmlWebpackPlugin) {
+        htmlPlugin = plugin;
+        return false;
+      }
+      return true;
+    }) 
 
     const nextConfig = {
       ...config,
@@ -54,6 +39,7 @@ module.exports = {
         ...(htmlPlugin 
           ? [new HtmlWebpackPlugin({
             ...htmlPlugin.options,
+            template: path.resolve(__dirname, 'public/index.html'),
             excludeChunks: ['background', 'content']
           })]
           : []),
