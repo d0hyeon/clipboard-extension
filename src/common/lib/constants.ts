@@ -1,0 +1,1 @@
+export const CLIPBOARD_STORAGE_KEY = 'web-clipboard'
