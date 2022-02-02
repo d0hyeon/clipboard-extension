@@ -1,13 +1,35 @@
 import { nanoid } from 'nanoid';
-import React, { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
-import { clipboardAtom } from '~common/lib/atoms';
+import React, { useCallback, useEffect } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { MessageData } from '~background/';
+import ClipboardList from '~common/components/ClipboardList';
+import { clipboardAtom, tabAtom } from '~common/lib/atoms';
 import { CLIPBOARD_STORAGE_KEY } from '~common/lib/constants';
 import { getSelectionText } from '~common/lib/getSelectionText';
 import { ClipboardData } from '~common/lib/types';
 
 function App() {
+  const setActiveTab = useSetRecoilState(tabAtom)
   const [clipboardState, setClipboardState] = useRecoilState(clipboardAtom)
+
+  const pushClipboard = useCallback((text: string) => {
+    const id = nanoid()
+    const clipboardData: ClipboardData = {
+      id,
+      text,
+      meta: {
+        url: window.location.href,
+        title: document.title
+      }
+    }
+
+    chrome.storage.sync.set({
+      [CLIPBOARD_STORAGE_KEY]: [
+        clipboardData,
+        ...clipboardState.filter((item: ClipboardData) => item.text !== text)
+      ]
+    })
+  }, [clipboardState])
 
   useEffect(function initializeChromeStorage () {
     chrome.storage.sync.get(CLIPBOARD_STORAGE_KEY, (dataMap) => {
@@ -23,39 +45,25 @@ function App() {
   }, [setClipboardState])
 
   useEffect(function subscribeChromeStorageChange() {
-    chrome.storage.onChanged.addListener((dataMap) => {
+    function handler(dataMap: {[key: string]: chrome.storage.StorageChange}) {
       const data = dataMap[CLIPBOARD_STORAGE_KEY]
       if(data.newValue) {
         setClipboardState(data.newValue)
       }
-    })
+    }
+
+    chrome.storage.onChanged.addListener(handler)
+    return () => chrome.storage.onChanged.removeListener(handler)
   }, [setClipboardState])
 
-  useEffect(function registeHandlerToCopyEvent() {
-    const handler = () => {
+  useEffect(function registeHandlerOfCopyEvent() {
+    const handler = (event: ClipboardEvent) => {
+      if((event.target as HTMLInputElement).nodeName === 'INPUT' || (event.target as HTMLTextAreaElement).nodeName === 'TEXTAREA') {
+        return pushClipboard((event.target as HTMLTextAreaElement).value)
+      }
       const selection = document.getSelection()
       if(selection) {
-        const id = nanoid()
-        const text = getSelectionText(selection)
-        const clipboardData: ClipboardData = {
-          id,
-          text,
-          meta: {
-            url: window.location.href,
-            title: document.title
-          }
-        }
-        chrome.storage.sync.get(CLIPBOARD_STORAGE_KEY, (dataMap) => {
-          const data = dataMap[CLIPBOARD_STORAGE_KEY]
-          if(data instanceof Array) {
-            chrome.storage.sync.set({
-              [CLIPBOARD_STORAGE_KEY]: [
-                clipboardData,
-                ...data
-              ]
-            })
-          }
-        })
+        return pushClipboard(getSelectionText(selection))
       }
     }
 
@@ -63,12 +71,26 @@ function App() {
     return () => {
       document.removeEventListener('copy', handler)
     }
-  }, [setClipboardState])
+  }, [pushClipboard, setClipboardState])
+
+  useEffect(function registeHandlerOfMessage() {
+    function handler (message: MessageData<boolean>) {
+      const { type, payload } = message
+
+      switch(type) {
+        case 'tabState': {
+          setActiveTab({ active: payload })
+          break
+        }
+      }
+    }
+
+    chrome.runtime.onMessage.addListener(handler)
+    return () => chrome.runtime.onMessage.removeListener(handler)
+  }, [setActiveTab])
 
   return (
-    <>
-      <div />
-    </>
+    <ClipboardList />
   )
 }
 
