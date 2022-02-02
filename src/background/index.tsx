@@ -1,3 +1,8 @@
+export type MessageData<P = any> = {
+  type: string;
+  payload: P
+}
+
 class BackgroundApplication {
   public currentActiveTabId: number | null = null
 
@@ -5,11 +10,11 @@ class BackgroundApplication {
     this.initialize()
   }
 
-  public sendMessageOfTabState(tabId: number) {
+  public sendMessage(tabId: number) {
     if(this.currentActiveTabId) {
-      chrome.tabs.sendMessage(this.currentActiveTabId, { active: false }) 
+      chrome.tabs.sendMessage(this.currentActiveTabId, { type: 'tabState', payload: false } as MessageData<boolean>) 
     }
-    chrome.tabs.sendMessage(tabId, { active: true })
+    chrome.tabs.sendMessage(tabId, { type: 'tabState', payload: true } as MessageData<boolean>)
     this.currentActiveTabId = tabId
   }
 
@@ -18,7 +23,7 @@ class BackgroundApplication {
       const [currentTab] = tabs
       console.log('tabs', tabs)
       if(currentTab.id) {
-        this.sendMessageOfTabState(currentTab.id)
+        this.sendMessage(currentTab.id)
       }
     })
     this.registeEventListeners()
@@ -26,7 +31,7 @@ class BackgroundApplication {
 
   public registeEventListeners() {
     chrome.tabs.onActivated.addListener((activeInfo) => {
-      this.sendMessageOfTabState(activeInfo.tabId)
+      this.sendMessage(activeInfo.tabId)
     })
   }
 }
