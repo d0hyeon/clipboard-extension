@@ -12,7 +12,6 @@ const WRAPPER_WIDTH = 250
 const ClipboardList = () => {
   const tabState = useRecoilValue(tabAtom)
   const clipboardList = useRecoilValue(clipboardAtom)
-  const { active: isActiveTab } = tabState
   const [isActive, setIsActive] = useState(false)
   const [position, setPosition] = useState({ top: 0, left: 0, bottom: 0, right: 0 })
   const focusElRef: MutableRefObject<Element | null> = useRef(null)
@@ -21,7 +20,12 @@ const ClipboardList = () => {
 
   const onClickItem = useCallback((text: string) => {
     if(focusElRef.current && 'value' in focusElRef.current) {
-      (focusElRef.current as HTMLInputElement).value = text  
+      const { current: input } = focusElRef as MutableRefObject<HTMLInputElement>
+      const { selectionStart, selectionEnd, value } = input;
+      const prefixText = value.substring(0, selectionStart ?? 0);
+      const postfixText = value.substring(selectionEnd ?? 0, value.length);
+
+      input.value = prefixText + text + postfixText
     }
     setIsActive(false)
   }, [focusElRef, setIsActive])
@@ -79,13 +83,19 @@ const ClipboardList = () => {
     }
   }, [setIsActive, openPopup])
 
-  useEffect(() => {
+  useEffect(function closePop () {
     if(isClicked) {
       setIsActive(false)
     }
   }, [isClicked, setIsActive])
+  
+  useEffect(function closePopWhenEmpty () {
+    if(isActive && clipboardList.length === 0) {
+      setIsActive(false)
+    }
+  }, [clipboardList, isActive, setIsActive])
 
-  useEffect(() => {
+  useEffect(function restoreFocusing() {
     if(!isActive) {
       if(focusElRef.current) {
         (focusElRef.current as HTMLElement)?.focus()
@@ -94,11 +104,6 @@ const ClipboardList = () => {
     }
   }, [isActive, focusElRef])
 
-  useEffect(() => {
-    if(isActive && clipboardList.length === 0) {
-      setIsActive(false)
-    }
-  }, [clipboardList, isActive, setIsActive])
 
   return (
     <>
