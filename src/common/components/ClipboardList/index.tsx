@@ -137,10 +137,9 @@ const StyledList = styled.ul<{ top: any, bottom: any, left: any, right: any }>`
   padding: 0;
   max-height: 500px;
   background-color: #fff;
-  border: 1px solid #333;
   z-index: 1000000;
   overflow-y: auto;
-  box-shadow: 3px 3px 10px #ddd;
+  box-shadow: 1px 5px 10px #999;
   border-radius: 20px;
   padding: 5px 0;
   ${({ top, bottom, left, right }) => `
