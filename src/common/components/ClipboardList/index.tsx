@@ -140,6 +140,9 @@ const StyledList = styled.ul<{ top: any, bottom: any, left: any, right: any }>`
   border: 1px solid #333;
   z-index: 1000000;
   overflow-y: auto;
+  box-shadow: 3px 3px 10px #ddd;
+  border-radius: 20px;
+  padding: 5px 0;
   ${({ top, bottom, left, right }) => `
     ${!!top && `top: ${top}px;`};
     ${!!bottom && `bottom: ${bottom}px;`};

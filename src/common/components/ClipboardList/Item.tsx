@@ -30,7 +30,7 @@ const ClipboardItem: FC<Props> = ({ id, meta, text, onClick, onDelete }) => {
 }
 
 const StyledItem = styled.li`
-  padding: 10px;
+  padding: 10px 15px;
   list-style: none;
   cursor: pointer;
   
