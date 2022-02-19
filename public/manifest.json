@@ -1,9 +1,12 @@
 {
-  "name": "clipboard-app",
-  "short_name": "clipboard-app",
-  "description": "clipboard util extension",
+  "name": "clipboard manager",
+  "short_name": "clipboard manager",
+  "description": "clipboard manager",
   "version": "1.0.0",
   "manifest_version": 3,
+  "icons": {
+   "128": "logo.png"
+  },
   "background": {
     "service_worker": "static/js/background.js",
     "type": "module"
