@@ -1,7 +1,7 @@
 {
-  "name": "clipboard manager",
-  "short_name": "clipboard manager",
-  "description": "clipboard manager",
+  "name": "Clipboard Manager",
+  "short_name": "Clipboard Manager",
+  "description": "Clipboard Manager",
   "version": "1.0.0",
   "manifest_version": 3,
   "icons": {
