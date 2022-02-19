@@ -8,6 +8,7 @@ import { ClipboardData } from '~common/lib/types'
 import ClipboardItem from './Item'
 
 const WRAPPER_WIDTH = 250
+const ELEMENT_SPACE = 10
 
 const ClipboardList = () => {
   const tabState = useRecoilValue(tabAtom)
@@ -54,12 +55,12 @@ const ClipboardList = () => {
 
       if(absoluteTop > scrollY + (innerHeight / 2)) {
         position.top = 0
-        position.bottom = absoluteTop + height
+        position.bottom = document.body.scrollHeight - absoluteTop - height
       }
       if(absoluteLeft > scrollX + (innerWidth / 2)) {
-        position.left -= 250
+        position.left -= (WRAPPER_WIDTH + ELEMENT_SPACE)
       } else {
-        position.left += width + 10
+        position.left += width + ELEMENT_SPACE
       }
       setPosition(position)
       setIsActive(true)
