@@ -9,6 +9,11 @@ import ClipboardItem from './Item'
 
 const WRAPPER_WIDTH = 250
 const ELEMENT_SPACE = 10
+const HTML_STYLE = `
+  html {
+    position: relative;
+  }
+`
 
 const ClipboardList = () => {
   const tabState = useRecoilValue(tabAtom)
@@ -58,7 +63,7 @@ const ClipboardList = () => {
         position.bottom = document.body.scrollHeight - absoluteTop - height
       }
       if(absoluteLeft > scrollX + (innerWidth / 2)) {
-        position.left -= (WRAPPER_WIDTH + ELEMENT_SPACE)
+        position.left -= (250 + ELEMENT_SPACE)
       } else {
         position.left += width + ELEMENT_SPACE
       }
@@ -105,6 +110,12 @@ const ClipboardList = () => {
     }
   }, [isActive, focusElRef])
 
+  useEffect(function initializeHtmlStyle () {
+    const stylesheet = document.createElement('style')
+    stylesheet.id = `${CLIPBOARD_STORAGE_KEY}-stylesheet`;
+    stylesheet.appendChild(document.createTextNode(HTML_STYLE.trim()))
+    document.head.appendChild(stylesheet)
+  }, [])
 
   return (
     <>
