@@ -17,7 +17,6 @@ module.exports = {
       ...config,
       entry: {
         main: path.resolve(__dirname, 'src/app/index.tsx'),
-        background: path.resolve(__dirname, 'src/background/index.tsx'),
         content: path.resolve(__dirname, 'src/content/index.tsx')
       },
       output: {
@@ -29,7 +28,6 @@ module.exports = {
         ...config.resolve,
         alias: {
           ...config.resolve.alias,
-          '~background': path.resolve(__dirname, 'src/background'),
           '~content': path.resolve(__dirname, 'src/content'),
           '~app': path.resolve(__dirname, 'src/app'),
           '~common': path.resolve(__dirname, 'src/common'),
@@ -40,7 +38,7 @@ module.exports = {
           ? [new HtmlWebpackPlugin({
             ...htmlPlugin.options,
             template: path.resolve(__dirname, 'public/index.html'),
-            excludeChunks: ['background', 'content']
+            excludeChunks: ['content']
           })]
           : []),
         ...Plugins

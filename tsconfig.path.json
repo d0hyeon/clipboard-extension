@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "paths": {
-      "~background*": ["src/background*"],
       "~content*": ["src/content*"],
       "~app*": ["src/app*"],
       "~common*": ["src/common*"]
