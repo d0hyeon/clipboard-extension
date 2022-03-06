@@ -8,8 +8,10 @@ interface Props extends ClipboardData {
 }
 
 const ClipboardItem: FC<Props> = ({ id, meta, text, onClick, onDelete }) => {
-  const handleClick = useCallback(() => {
-    onClick(text)
+  const handleClick = useCallback((event) => {
+    if(event.target.tagName !== 'A') {
+      onClick(text)
+    }
   }, [text, onClick])
   const handleDelete = useCallback<MouseEventHandler>((event)  => {
     event.stopPropagation()
