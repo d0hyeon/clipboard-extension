@@ -23,7 +23,9 @@ const ClipboardItem: FC<Props> = ({ id, meta, text, onClick, onDelete }) => {
       </p>
       <p>
         <small>{meta.title}</small>
-        <small>{meta.url}</small>
+        <small>
+          <a href={meta.url} target="_blank" rel="noopener noreferrer nofollow">{meta.url}</a>
+        </small>
       </p>
     </StyledItem>
   )
