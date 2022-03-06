@@ -1,15 +1,13 @@
 import { nanoid } from 'nanoid';
 import React, { useCallback, useEffect } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { MessageData } from '~background/';
+import { useRecoilState } from 'recoil';
 import ClipboardList from '~common/components/ClipboardList';
-import { clipboardAtom, tabAtom } from '~common/lib/atoms';
+import { clipboardAtom } from '~common/lib/atoms';
 import { CLIPBOARD_STORAGE_KEY } from '~common/lib/constants';
 import { getSelectionText } from '~common/lib/getSelectionText';
 import { ClipboardData } from '~common/lib/types';
 
 function App() {
-  const setActiveTab = useSetRecoilState(tabAtom)
   const [clipboardState, setClipboardState] = useRecoilState(clipboardAtom)
 
   const pushClipboard = useCallback((text: string) => {
@@ -22,7 +20,6 @@ function App() {
         title: document.title
       }
     }
-
     chrome.storage.sync.set({
       [CLIPBOARD_STORAGE_KEY]: [
         clipboardData,
@@ -72,22 +69,6 @@ function App() {
       document.removeEventListener('copy', handler)
     }
   }, [pushClipboard, setClipboardState])
-
-  useEffect(function registeHandlerOfMessage() {
-    function handler (message: MessageData<boolean>) {
-      const { type, payload } = message
-
-      switch(type) {
-        case 'tabState': {
-          setActiveTab({ active: payload })
-          break
-        }
-      }
-    }
-
-    chrome.runtime.onMessage.addListener(handler)
-    return () => chrome.runtime.onMessage.removeListener(handler)
-  }, [setActiveTab])
 
   return (
     <ClipboardList />

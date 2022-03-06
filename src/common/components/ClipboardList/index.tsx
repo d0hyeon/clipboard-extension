@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import useClickOuter from '~common/hooks/useClickOuter'
-import { clipboardAtom, tabAtom } from '~common/lib/atoms'
+import { clipboardAtom } from '~common/lib/atoms'
 import { CLIPBOARD_STORAGE_KEY } from '~common/lib/constants'
 import { ClipboardData } from '~common/lib/types'
 import ClipboardItem from './Item'
@@ -16,7 +16,6 @@ const HTML_STYLE = `
 `
 
 const ClipboardList = () => {
-  const tabState = useRecoilValue(tabAtom)
   const clipboardList = useRecoilValue(clipboardAtom)
   const [isActive, setIsActive] = useState(false)
   const [position, setPosition] = useState({ top: 0, left: 0, bottom: 0, right: 0 })
