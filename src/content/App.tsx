@@ -6,6 +6,24 @@ import { clipboardAtom } from '~common/lib/atoms';
 import { CLIPBOARD_STORAGE_KEY } from '~common/lib/constants';
 import { ClipboardData } from '~common/lib/types';
 
+const MAX_STORAGE_MESSAGE = 'QUOTA_BYTES_PER_ITEM'
+
+function pushClipboardByLRU (data: ClipboardData, list: ClipboardData[]) {
+  chrome.storage.sync.set({
+    [CLIPBOARD_STORAGE_KEY]: [
+      data,
+      ...list.filter((item: ClipboardData) => item.text !== data.text)
+    ]
+  }).catch((error) => {
+    const { message = '' } = error ?? {}
+    if(message.indexOf(MAX_STORAGE_MESSAGE) > -1 && list.length) {
+      const cloneList = [...list]
+      cloneList.shift()
+      pushClipboardByLRU(data, cloneList)
+    }
+  })
+}
+
 function App() {
   const [clipboardState, setClipboardState] = useRecoilState(clipboardAtom)
 
@@ -20,12 +38,7 @@ function App() {
       }
     }
 
-    chrome.storage.sync.set({
-      [CLIPBOARD_STORAGE_KEY]: [
-        clipboardData,
-        ...clipboardState.filter((item: ClipboardData) => item.text !== text)
-      ]
-    })
+    pushClipboardByLRU(clipboardData, clipboardState)
   }, [clipboardState])
 
   useEffect(function initializeChromeStorage () {
