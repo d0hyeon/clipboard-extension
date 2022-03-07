@@ -4,7 +4,6 @@ import { useRecoilState } from 'recoil';
 import ClipboardList from '~common/components/ClipboardList';
 import { clipboardAtom } from '~common/lib/atoms';
 import { CLIPBOARD_STORAGE_KEY } from '~common/lib/constants';
-import { getSelectionText } from '~common/lib/getSelectionText';
 import { ClipboardData } from '~common/lib/types';
 
 function App() {
@@ -20,6 +19,7 @@ function App() {
         title: document.title
       }
     }
+
     chrome.storage.sync.set({
       [CLIPBOARD_STORAGE_KEY]: [
         clipboardData,
@@ -55,12 +55,16 @@ function App() {
 
   useEffect(function registeHandlerOfCopyEvent() {
     const handler = (event: ClipboardEvent) => {
-      if((event.target as HTMLInputElement).nodeName === 'INPUT' || (event.target as HTMLTextAreaElement).nodeName === 'TEXTAREA') {
-        return pushClipboard((event.target as HTMLTextAreaElement).value)
-      }
-      const selection = document.getSelection()
-      if(selection) {
-        return pushClipboard(getSelectionText(selection))
+      try {
+        if((event.target as HTMLInputElement).nodeName === 'INPUT' || (event.target as HTMLTextAreaElement).nodeName === 'TEXTAREA') {
+          return pushClipboard((event.target as HTMLTextAreaElement).value)
+        }
+        const selection = document.getSelection()
+        if(selection) {
+          return pushClipboard(selection.toString())
+        }
+      } catch(e) {
+        console.log(e)
       }
     }
 
